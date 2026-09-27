@@ -1,5 +1,6 @@
 # Credit Card Fraud Detection
 
+[![Checks](https://github.com/Germanskii/credit-card-fraud-detection/actions/workflows/checks.yml/badge.svg)](https://github.com/Germanskii/credit-card-fraud-detection/actions/workflows/checks.yml)
 Compare Random Forest and CatBoost with validation-only model selection and decision-threshold tuning.
 
 ## Experiment
@@ -15,6 +16,8 @@ Random stratification is an educational evaluation protocol, not a deployment si
 Python 3.12 was used for local validation. Run commands from the repository root.
 
 ```bash
+git clone https://github.com/Germanskii/credit-card-fraud-detection.git
+cd credit-card-fraud-detection
 python -m venv .venv
 # Linux/macOS:
 source .venv/bin/activate
@@ -29,7 +32,7 @@ The recorded dependency versions were tested on Linux CPU.
 python -m src.benchmark --help
 ```
 
-The cleaned Colab/Jupyter experiment is in [`notebooks/experiment.ipynb`](notebooks/experiment.ipynb). To open it locally, install Jupyter separately (`python -m pip install jupyterlab`) and run `jupyter lab`. Command-line runs save figures instead of requiring an interactive window.
+[Open in Colab](https://colab.research.google.com/github/Germanskii/credit-card-fraud-detection/blob/main/notebooks/experiment.ipynb). The cleaned Colab/Jupyter experiment is in [`notebooks/experiment.ipynb`](notebooks/experiment.ipynb). To open it locally, install Jupyter separately (`python -m pip install jupyterlab`) and run `jupyter lab`. Command-line runs save figures instead of requiring an interactive window.
 
 ## Data
 
@@ -40,8 +43,11 @@ Supply a local `creditcard.csv`. Without `--data`, the script uses the public Te
 Full validation/test performance on the original benchmark is pending; no synthetic-data metrics are presented as fraud-detection quality. See [VALIDATION.md](VALIDATION.md) for exactly what was checked. No historical notebook output is used as evidence for the corrected implementation.
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 ```
+
+GitHub Actions runs the regression tests and validates notebook structure on pushes and pull requests. It does not download training datasets or establish model accuracy.
 
 ## Repository layout
 
@@ -52,3 +58,6 @@ python -m unittest discover -s tests -v
 - `DATA.md`: data access and redistribution notes.
 
 This project was developed from a university Colab experiment and subsequently cleaned up for reproducibility. Generated data, trained weights and local paths are excluded from version control.
+
+
+The portfolio cleanup and packaging used AI-assisted development. The notebooks derive from the original university work; validation limits are documented above.

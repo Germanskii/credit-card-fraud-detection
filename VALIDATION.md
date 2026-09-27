@@ -7,3 +7,8 @@ Full validation/test performance on the original benchmark is pending; no synthe
 The source notebook passed schema checks and sequential execution during cleanup. For ML notebooks, external data were replaced only inside the test harness by small explicitly synthetic fixtures, and training was shortened. These checks verify code paths, not scientific performance. Published notebooks retain the full experiment settings and contain no synthetic scores.
 
 The extracted command-line modules are additionally checked for importability, help output and the regression cases included in `tests/`. No training or download occurs on module import.
+
+
+## Input validation regression coverage
+
+The schema check now rejects fractional labels before converting them to integers, nonnumeric features, missing/infinite values, missing columns and a single-class target. Four additional tests cover these cases and valid binary input. The same validation is used in the notebook and command-line implementation.
