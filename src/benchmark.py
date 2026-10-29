@@ -1,6 +1,7 @@
 """Compare Random Forest and CatBoost with validation-only model selection and decision-threshold tuning."""
 
 import argparse
+import json
 from pathlib import Path
 import time
 import numpy as np
@@ -41,12 +42,7 @@ def validate_data(data):
 
 def choose_threshold(y, prob):
     precision, recall, thresholds = precision_recall_curve(y, prob)
-    f1 = (
-        2
-        * precision[:-1]
-        * recall[:-1]
-        / np.maximum(precision[:-1] + recall[:-1], 1e-12)
-    )
+    f1 = 2 * precision[:-1] * recall[:-1] / np.maximum(precision[:-1] + recall[:-1], 1e-12)
     return float(thresholds[int(np.argmax(f1))])
 
 
@@ -74,9 +70,7 @@ def main(argv=None):
     SEED = args.seed
     OUTPUT = args.output
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    data = pd.read_csv(
-        args.data if args.data is not None else DATA_URL
-    ).drop_duplicates()
+    data = pd.read_csv(args.data if args.data is not None else DATA_URL).drop_duplicates()
     X, y = validate_data(data)
     X_dev, X_test, y_dev, y_test = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=SEED
@@ -135,21 +129,37 @@ def main(argv=None):
     validation = pd.DataFrame(validation).set_index("model")
     print(validation.to_string())
     selected = validation["validation_AP"].idxmax()
-    print("Выбрана по validation AP:", selected)
+    print("Selected by validation AP:", selected)
 
     prob = models[selected].predict_proba(X_test)[:, 1]
     pred = (prob >= thresholds[selected]).astype(int)
     print(classification_report(y_test, pred, digits=4, zero_division=0))
-    print("Test Average Precision:", average_precision_score(y_test, prob))
+    test_ap = float(average_precision_score(y_test, prob))
+    print("Test Average Precision:", test_ap)
     print("Baseline AP (constant probability):", y_test.mean())
     ConfusionMatrixDisplay.from_predictions(y_test, pred)
     save_figure()
     PrecisionRecallDisplay.from_predictions(y_test, prob)
     save_figure()
     validation.to_csv(OUTPUT / "validation.csv")
-    pd.DataFrame(
-        {"y_true": y_test.to_numpy(), "probability": prob, "prediction": pred}
-    ).to_csv(OUTPUT / "test_predictions.csv", index=False)
+    pd.DataFrame({"y_true": y_test.to_numpy(), "probability": prob, "prediction": pred}).to_csv(
+        OUTPUT / "test_predictions.csv", index=False
+    )
+    summary = {
+        "seed": SEED,
+        "source": "local CSV" if args.data is not None else DATA_URL,
+        "rows_after_deduplication": len(data),
+        "split_rows": {"train": len(y_train), "validation": len(y_val), "test": len(y_test)},
+        "selected_model": selected,
+        "selection_metric": "validation average precision",
+        "threshold": float(thresholds[selected]),
+        "test_average_precision": test_ap,
+        "test_prevalence": float(y_test.mean()),
+        "test_classification_report": classification_report(
+            y_test, pred, output_dict=True, zero_division=0
+        ),
+    }
+    (OUTPUT / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

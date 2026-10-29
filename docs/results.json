@@ -1,0 +1,75 @@
+{
+  "environment": {
+    "date": "2026-10-29",
+    "os": "Windows",
+    "python": "3.12.10",
+    "device": "cpu",
+    "processor": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel",
+    "OMP_NUM_THREADS": 2,
+    "MKL_NUM_THREADS": 2,
+    "concurrent_experiments": true
+  },
+  "command": "python -m src.benchmark --data data/creditcard.csv",
+  "data": {
+    "source": "https://storage.googleapis.com/download.tensorflow.org/data/creditcard.csv",
+    "sha256": "76274b691b16a6c49d3f159c883398e03ccd6d1ee12d9d8ee38f4b4b98551a89",
+    "bytes": 150828752
+  },
+  "summary": {
+    "seed": 42,
+    "source": "local CSV",
+    "rows_after_deduplication": 283726,
+    "split_rows": {
+      "train": 170235,
+      "validation": 56745,
+      "test": 56746
+    },
+    "selected_model": "RandomForest",
+    "selection_metric": "validation average precision",
+    "threshold": 0.6193435223573353,
+    "test_average_precision": 0.7674643890375847,
+    "test_prevalence": 0.0016741268107003137,
+    "test_classification_report": {
+      "0": {
+        "precision": 0.9995764431816176,
+        "recall": 0.9997881767312139,
+        "f1-score": 0.9996822987450801,
+        "support": 56651.0
+      },
+      "1": {
+        "precision": 0.8554216867469879,
+        "recall": 0.7473684210526316,
+        "f1-score": 0.797752808988764,
+        "support": 95.0
+      },
+      "accuracy": 0.999365594050682,
+      "macro avg": {
+        "precision": 0.9274990649643028,
+        "recall": 0.8735782988919227,
+        "f1-score": 0.8987175538669221,
+        "support": 56746.0
+      },
+      "weighted avg": {
+        "precision": 0.9993351098389804,
+        "recall": 0.999365594050682,
+        "f1-score": 0.999344243172408,
+        "support": 56746.0
+      }
+    }
+  },
+  "validation": [
+    {
+      "model": "RandomForest",
+      "validation_AP": "0.8323911814408281",
+      "threshold": "0.6193435223573353",
+      "train_seconds": "11.123402800003532"
+    },
+    {
+      "model": "CatBoost",
+      "validation_AP": "0.7790101864972324",
+      "threshold": "0.9277191818884749",
+      "train_seconds": "2.605868000013288"
+    }
+  ],
+  "limits": "One random stratified split and seed; no temporal or production evaluation."
+}
